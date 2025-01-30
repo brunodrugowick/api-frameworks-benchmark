@@ -20,6 +20,8 @@ func main() {
 		log.Fatalf("Invalid port: %v", err)
 	}
 
+	log.Printf("Starting server on port %d", port)
+
 	apiPathHandler := server.NewDefaultPathHandlerBuilder("/api").
 		WithHandlerFunc("/", func(w http.ResponseWriter, r *http.Request) {
 			w.Write([]byte("Hello, Golang!"))
