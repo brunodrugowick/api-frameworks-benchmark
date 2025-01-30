@@ -1,0 +1,1 @@
+web: java -jar spring-http-server/target/demo-0.0.1-SNAPSHOT.jar
