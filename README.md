@@ -2,11 +2,30 @@
 
 Projetos para fazer benchmark de web servers
 
+> _NOTA_: O projeto está com uma estrutura maluca pois o HEROKU é uma porcaria! Em suma, tive que por o app Java na raíz e deixei o Go numa pasta.
+
 # Testes
 
-Testes feitos com Apache Bench (`ab`).
+Faça deploy no Heroku:
 
-## Teste 1
+```shell
+heroku apps:create benchmark-spring-api
+heroku apps:create benchmark-golang-api
+heroku buildpacks:add -a benchmark-spring-api heroku-community/multi-procfile
+heroku buildpacks:add -a benchmark-golang-api heroku-community/multi-procfile
+heroku config:set -a benchmark-spring-api PROCFILE=Procfile
+heroku config:set -a benchmark-golang-api PROCFILE=go-http-server/Procfile
+git push https://git.heroku.com/benchmark-spring-api.git HEAD:master
+git push https://git.heroku.com/benchmark-golang-api.git HEAD:master
+```
+
+Você pode executar os testes com:
+
+```shell
+ab -n 100000 -c 10 <host>:<port>/api/
+```
+
+## Teste Locais
 
 Comando: `ab -n 10000000 -c 100 localhost:<port>/api/`
 
