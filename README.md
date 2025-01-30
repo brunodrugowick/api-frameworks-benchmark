@@ -4,6 +4,11 @@ Projetos para fazer benchmark de web servers
 
 > _NOTA_: O projeto está com uma estrutura maluca pois o HEROKU é uma porcaria! Em suma, tive que por o app Java na raíz e deixei o Go numa pasta.
 
+# TODO
+
+- [ ] Adicionar algum framework web de Go pra ser justo com o Spring
+
+
 # Testes
 
 Faça deploy no Heroku:
@@ -25,7 +30,7 @@ Você pode executar os testes com:
 ab -n 100000 -c 10 <host>:<port>/api/
 ```
 
-## Teste Locais
+## Resultados Locais
 
 Comando: `ab -n 10000000 -c 100 localhost:<port>/api/`
 
@@ -126,7 +131,3 @@ Comando: `ab -n 10000000 -c 100 localhost:<port>/api/`
 
     ```
 </details>
-
-# TODO
-
-- [ ] Adicionar algum framework web de Go pra ser justo com o Spring
