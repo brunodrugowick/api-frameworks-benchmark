@@ -1,0 +1,14 @@
+package com.example.demo
+
+import jakarta.persistence.*
+
+@Entity
+class MiddleEntity(
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    val id: Long? = null,
+
+    @OneToMany(cascade = [CascadeType.ALL], fetch = FetchType.LAZY)
+    val innerEntities: List<InnerEntity> = mutableListOf()
+)
