@@ -1,16 +1,13 @@
 package main
 
 import (
-	"encoding/json"
 	"fmt"
+	"github.com/gin-gonic/gin"
+	"gorm.io/driver/postgres"
+	"gorm.io/gorm"
 	"log"
 	"net/http"
 	"os"
-	"strconv"
-
-	"github.com/brunodrugowick/go-http-server-things/pkg/server"
-	"gorm.io/driver/postgres"
-	"gorm.io/gorm"
 )
 
 type TopEntity struct {
@@ -74,29 +71,18 @@ func main() {
 		portString = "9096"
 	}
 
-	port, err := strconv.Atoi(portString)
-	if err != nil {
-		log.Fatalf("Invalid port: %v", err)
-	}
+	log.Printf("Starting server on port :%s", portString)
 
-	log.Printf("Starting server on port %d", port)
-
-	apiPathHandler := server.NewDefaultPathHandlerBuilder("/api").
-		WithHandlerFunc("/", func(w http.ResponseWriter, r *http.Request) {
-			w.Write([]byte("Hello, Golang!"))
-		}).
-		WithHandlerFunc("/top-entities", func(w http.ResponseWriter, r *http.Request) {
-			var topEntities []TopEntity
-			db.Preload("MiddleEntities.InnerEntities").Find(&topEntities)
-			w.Header().Set("Content-Type", "application/json")
-			w.WriteHeader(http.StatusOK)
-			json.NewEncoder(w).Encode(topEntities)
-		}).
-		Build()
-
-	srv := server.NewDefaultServerBuilder().
-		SetPort(port).
-		WithPathHandler(apiPathHandler).Build()
-
-	log.Fatal(srv.ListenAndServe())
+	gin.SetMode(gin.ReleaseMode)
+	r := gin.Default()
+	r.GET("/api", func(c *gin.Context) {
+		c.Writer.Write([]byte("Hello, Golang"))
+		c.Writer.WriteHeader(http.StatusOK)
+	})
+	r.GET("/api/top-entities", func(c *gin.Context) {
+		var topEntities []TopEntity
+		db.Preload("MiddleEntities.InnerEntities").Find(&topEntities)
+		c.JSON(http.StatusOK, topEntities)
+	})
+	r.Run(fmt.Sprintf(":%s", portString))
 }
