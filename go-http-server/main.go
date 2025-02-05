@@ -8,6 +8,7 @@ import (
 	"log"
 	"net/http"
 	"os"
+	"time"
 )
 
 type TopEntity struct {
@@ -36,6 +37,16 @@ func main() {
 	if err != nil {
 		log.Fatalf("failed to connect database: %v", err)
 	}
+
+	// Retrieve the underlying *sql.DB object
+	sqlDB, err := db.DB()
+	if err != nil {
+		log.Fatalf("failed to get *sql.DB: %v", err)
+	}
+	// Configure the connection pool
+	sqlDB.SetMaxIdleConns(10)           // Set the maximum number of idle connections
+	sqlDB.SetMaxOpenConns(100)          // Set the maximum number of open connections
+	sqlDB.SetConnMaxLifetime(time.Hour) // Set the maximum lifetime of a connection
 
 	// Clear DB
 	db.Delete(&InnerEntity{}, "1=1")
@@ -78,10 +89,14 @@ func main() {
 	r.GET("/api", func(c *gin.Context) {
 		c.Writer.Write([]byte("Hello, Golang"))
 		c.Writer.WriteHeader(http.StatusOK)
+		return
 	})
 	r.GET("/api/top-entities", func(c *gin.Context) {
 		var topEntities []TopEntity
-		db.Preload("MiddleEntities.InnerEntities").Find(&topEntities)
+		if err := db.Preload("MiddleEntities.InnerEntities").Find(&topEntities).Error; err != nil {
+			c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+			return
+		}
 		c.JSON(http.StatusOK, topEntities)
 	})
 	r.Run(fmt.Sprintf(":%s", portString))
