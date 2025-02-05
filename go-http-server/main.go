@@ -13,19 +13,19 @@ import (
 
 type TopEntity struct {
 	ID             uint           `gorm:"primaryKey" json:"id"`
-	MiddleEntities []MiddleEntity `gorm:"foreignKey:TopEntityID" json:"middleEntities"`
+	MiddleEntities []MiddleEntity `gorm:"many2many:top_entity_middle_entity;" json:"middleEntities"`
 }
 
 type MiddleEntity struct {
 	ID            uint          `gorm:"primaryKey" json:"id"`
-	TopEntityID   uint          `json:"-"`
-	InnerEntities []InnerEntity `gorm:"foreignKey:MiddleEntityID" json:"innerEntities"`
+	TopEntities   []TopEntity   `gorm:"many2many:top_entity_middle_entity;" json:"-"`
+	InnerEntities []InnerEntity `gorm:"many2many:middle_entity_inner_entity" json:"innerEntities"`
 }
 
 type InnerEntity struct {
-	ID             uint   `gorm:"primaryKey" json:"id"`
-	MiddleEntityID uint   `json:"-"`
-	Text           string `gorm:"type:varchar(100)" json:"text"`
+	ID             uint           `gorm:"primaryKey" json:"id"`
+	MiddleEntities []MiddleEntity `gorm:"many2many:middle_entity_inner_entity"`
+	Text           string         `gorm:"type:varchar(100)" json:"text"`
 }
 
 func main() {
@@ -60,15 +60,18 @@ func main() {
 		db.Create(&topEntity)
 
 		for j := 0; j < 10; j++ {
-			middleEntity := MiddleEntity{TopEntityID: topEntity.ID}
+			middleEntity := MiddleEntity{TopEntities: []TopEntity{topEntity}}
+			middleEntity.TopEntities = append(middleEntity.TopEntities, topEntity)
 			db.Create(&middleEntity)
+			topEntity.MiddleEntities = append(topEntity.MiddleEntities, middleEntity)
 
 			for k := 0; k < 10; k++ {
 				innerEntity := InnerEntity{
-					MiddleEntityID: middleEntity.ID,
-					Text:           fmt.Sprintf("%d-%d-%d", i, j, k),
+					Text: fmt.Sprintf("%d-%d-%d", i, j, k),
 				}
+				innerEntity.MiddleEntities = append(innerEntity.MiddleEntities, middleEntity)
 				db.Create(&innerEntity)
+				middleEntity.InnerEntities = append(middleEntity.InnerEntities, innerEntity)
 			}
 		}
 	}
@@ -99,5 +102,9 @@ func main() {
 		}
 		c.JSON(http.StatusOK, topEntities)
 	})
-	r.Run(fmt.Sprintf(":%s", portString))
+
+	err = r.Run(fmt.Sprintf(":%s", portString))
+	if err != nil {
+		fmt.Print(err)
+	}
 }
