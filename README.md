@@ -37,55 +37,6 @@ ab -n 100000 -c 10 <host>:<port>/api/
 Comando: `ab -n 10000000 -c 100 localhost:<port>/api/`
 
 <details>
-    <summary>Resultados Golang (apenas bibliotecas nativas)</summary>
-    ```
-    This is ApacheBench, Version 2.3 <$Revision: 1879490 $>
-    Copyright 1996 Adam Twiss, Zeus Technology Ltd, http://www.zeustech.net/
-    Licensed to The Apache Software Foundation, http://www.apache.org/
-
-    Benchmarking localhost (be patient)
-
-
-    Server Software:        
-    Server Hostname:        localhost
-    Server Port:            8085
-
-    Document Path:          /api/
-    Document Length:        14 bytes
-
-    Concurrency Level:      100
-    Time taken for tests:   435.847 seconds
-    Complete requests:      10000000
-    Failed requests:        0
-    Total transferred:      1310000000 bytes
-    HTML transferred:       140000000 bytes
-    Requests per second:    22943.84 [#/sec] (mean)
-    Time per request:       4.358 [ms] (mean)
-    Time per request:       0.044 [ms] (mean, across all concurrent requests)
-    Transfer rate:          2935.20 [Kbytes/sec] received
-
-    Connection Times (ms)
-                min  mean[+/-sd] median   max
-    Connect:        0    2   0.5      2       6
-    Processing:     0    2   0.5      2      13
-    Waiting:        0    1   0.5      1      12
-    Total:          1    4   0.4      4      16
-
-    Percentage of the requests served within a certain time (ms)
-    50%      4
-    66%      4
-    75%      5
-    80%      5
-    90%      5
-    95%      5
-    98%      5
-    99%      5
-    100%     16 (longest request)
-
-    ```
-</details>
-
-<details>
     <summary>Resultados Kotlin (com Spring)</summary>
     ```
     This is ApacheBench, Version 2.3 <$Revision: 1879490 $>
@@ -134,10 +85,59 @@ Comando: `ab -n 10000000 -c 100 localhost:<port>/api/`
     ```
 </details>
 
+<details>
+    <summary>Resultados Golang (apenas bibliotecas nativas)</summary>
+    ```
+    This is ApacheBench, Version 2.3 <$Revision: 1879490 $>
+    Copyright 1996 Adam Twiss, Zeus Technology Ltd, http://www.zeustech.net/
+    Licensed to The Apache Software Foundation, http://www.apache.org/
+
+    Benchmarking localhost (be patient)
+
+
+    Server Software:        
+    Server Hostname:        localhost
+    Server Port:            8085
+
+    Document Path:          /api/
+    Document Length:        14 bytes
+
+    Concurrency Level:      100
+    Time taken for tests:   435.847 seconds
+    Complete requests:      10000000
+    Failed requests:        0
+    Total transferred:      1310000000 bytes
+    HTML transferred:       140000000 bytes
+    Requests per second:    22943.84 [#/sec] (mean)
+    Time per request:       4.358 [ms] (mean)
+    Time per request:       0.044 [ms] (mean, across all concurrent requests)
+    Transfer rate:          2935.20 [Kbytes/sec] received
+
+    Connection Times (ms)
+                min  mean[+/-sd] median   max
+    Connect:        0    2   0.5      2       6
+    Processing:     0    2   0.5      2      13
+    Waiting:        0    1   0.5      1      12
+    Total:          1    4   0.4      4      16
+
+    Percentage of the requests served within a certain time (ms)
+    50%      4
+    66%      4
+    75%      5
+    80%      5
+    90%      5
+    95%      5
+    98%      5
+    99%      5
+    100%     16 (longest request)
+
+    ```
+</details>
+
 ## Resultados Locais (com Banco de Dados)
 
 <details>
-    <summary>Resultados Kotlin (com Spring)</summary
+    <summary>Resultados Kotlin (com Spring)</summary>
     ```
     >> ab -n 100000 -c 10 localhost:9095/api/top-entities
     This is ApacheBench, Version 2.3 <$Revision: 1879490 $>
@@ -255,4 +255,130 @@ Comando: `ab -n 10000000 -c 100 localhost:<port>/api/`
     99%     32
     100%     62 (longest request)
     ```
+</details>
+
+## Resultados Locais (com ORM e framework web em ambos)
+
+<details>
+    <summary>Resultados Kotlin (com Spring)</summary>
+
+    ```shell
+     >> ab -n 100000 -c 10 localhost:9095/api/top-entities
+    This is ApacheBench, Version 2.3 <$Revision: 1879490 $>
+    Copyright 1996 Adam Twiss, Zeus Technology Ltd, http://www.zeustech.net/
+    Licensed to The Apache Software Foundation, http://www.apache.org/
+    
+    Benchmarking localhost (be patient)
+    Completed 10000 requests
+    Completed 20000 requests
+    Completed 30000 requests
+    Completed 40000 requests
+    Completed 50000 requests
+    Completed 60000 requests
+    Completed 70000 requests
+    Completed 80000 requests
+    Completed 90000 requests
+    Completed 100000 requests
+    Finished 100000 requests
+    
+    
+    Server Software:
+    Server Hostname:        localhost
+    Server Port:            9095
+    
+    Document Path:          /api/top-entities
+    Document Length:        29267 bytes
+    
+    Concurrency Level:      10
+    Time taken for tests:   286.066 seconds
+    Complete requests:      100000
+    Failed requests:        0
+    Total transferred:      2937200000 bytes
+    HTML transferred:       2926700000 bytes
+    Requests per second:    349.57 [#/sec] (mean)
+    Time per request:       28.607 [ms] (mean)
+    Time per request:       2.861 [ms] (mean, across all concurrent requests)
+    Transfer rate:          10026.93 [Kbytes/sec] received
+    
+    Connection Times (ms)
+                  min  mean[+/-sd] median   max
+    Connect:        0    0   0.0      0       3
+    Processing:    22   29   2.8     28     220
+    Waiting:       12   16   1.8     16     179
+    Total:         22   29   2.8     28     220
+    
+    Percentage of the requests served within a certain time (ms)
+      50%     28
+      66%     29
+      75%     29
+      80%     30
+      90%     31
+      95%     33
+      98%     36
+      99%     38
+     100%    220 (longest request)
+    ```
+
+</details>
+
+<details>
+    <summary>Resultados Golang</summary>
+
+    ```shell
+     >> ab -n 100000 -c 10 localhost:9096/api/top-entities
+    This is ApacheBench, Version 2.3 <$Revision: 1879490 $>
+    Copyright 1996 Adam Twiss, Zeus Technology Ltd, http://www.zeustech.net/
+    Licensed to The Apache Software Foundation, http://www.apache.org/
+    
+    Benchmarking localhost (be patient)
+    Completed 10000 requests
+    Completed 20000 requests
+    Completed 30000 requests
+    Completed 40000 requests
+    Completed 50000 requests
+    Completed 60000 requests
+    Completed 70000 requests
+    Completed 80000 requests
+    Completed 90000 requests
+    Completed 100000 requests
+    Finished 100000 requests
+    
+    
+    Server Software:
+    Server Hostname:        localhost
+    Server Port:            9096
+    
+    Document Path:          /api/top-entities
+    Document Length:        50967 bytes
+    
+    Concurrency Level:      10
+    Time taken for tests:   93.394 seconds
+    Complete requests:      100000
+    Failed requests:        0
+    Total transferred:      5107000000 bytes
+    HTML transferred:       5096700000 bytes
+    Requests per second:    1070.73 [#/sec] (mean)
+    Time per request:       9.339 [ms] (mean)
+    Time per request:       0.934 [ms] (mean, across all concurrent requests)
+    Transfer rate:          53400.60 [Kbytes/sec] received
+    
+    Connection Times (ms)
+                  min  mean[+/-sd] median   max
+    Connect:        0    0   0.0      0       2
+    Processing:     6    9   1.0      9      20
+    Waiting:        5    9   1.0      9      20
+    Total:          6    9   1.0      9      20
+    
+    Percentage of the requests served within a certain time (ms)
+      50%      9
+      66%     10
+      75%     10
+      80%     10
+      90%     10
+      95%     11
+      98%     12
+      99%     13
+     100%     20 (longest request)
+    ```
+
 </details>
