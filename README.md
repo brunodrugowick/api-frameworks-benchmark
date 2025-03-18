@@ -6,7 +6,7 @@ Projetos para fazer benchmark de web servers
 
 # TODO
 
-- [ ] Adicionar algum framework web de Go pra ser justo com o Spring
+- [X] Adicionar algum framework web de Go pra ser justo com o Spring
 - [X] Adicionar algum ORM ao Go pra ser justo com o Spring (gorm)
 
 # Testes
@@ -380,5 +380,131 @@ Comando: `ab -n 10000000 -c 100 localhost:<port>/api/`
       99%     13
      100%     20 (longest request)
     ```
+
+</details>
+
+## Resultados Docker (com limite de `cpus=1` e `memory=256m`)
+
+<details>
+
+<summary>Resultados Kotlin (`make spring-bench`) </summary>
+
+```shell
+This is ApacheBench, Version 2.3 <$Revision: 1879490 $>
+Copyright 1996 Adam Twiss, Zeus Technology Ltd, http://www.zeustech.net/
+Licensed to The Apache Software Foundation, http://www.apache.org/
+
+Benchmarking localhost (be patient)
+Completed 1000 requests
+Completed 2000 requests
+Completed 3000 requests
+Completed 4000 requests
+Completed 5000 requests
+Completed 6000 requests
+Completed 7000 requests
+Completed 8000 requests
+Completed 9000 requests
+Completed 10000 requests
+Finished 10000 requests
+
+
+Server Software:
+Server Hostname:        localhost
+Server Port:            9095
+
+Document Path:          /api/top-entities
+Document Length:        29267 bytes
+
+Concurrency Level:      100
+Time taken for tests:   71.107 seconds
+Complete requests:      10000
+Failed requests:        0
+Total transferred:      293720000 bytes
+HTML transferred:       292670000 bytes
+Requests per second:    140.63 [#/sec] (mean)
+Time per request:       711.068 [ms] (mean)
+Time per request:       7.111 [ms] (mean, across all concurrent requests)
+Transfer rate:          4033.88 [Kbytes/sec] received
+
+Connection Times (ms)
+              min  mean[+/-sd] median   max
+Connect:        0    0   0.2      0       2
+Processing:    26  706 369.5    594    4310
+Waiting:       13  674 357.0    575    4294
+Total:         26  706 369.5    594    4310
+
+Percentage of the requests served within a certain time (ms)
+  50%    594
+  66%    684
+  75%    735
+  80%    793
+  90%    996
+  95%   1490
+  98%   1894
+  99%   2387
+ 100%   4310 (longest request)
+```
+
+</details>
+
+<details>
+
+<summary>Resultados Golang (`make golang-bench`)</summary>
+
+```shell
+This is ApacheBench, Version 2.3 <$Revision: 1879490 $>
+Copyright 1996 Adam Twiss, Zeus Technology Ltd, http://www.zeustech.net/
+Licensed to The Apache Software Foundation, http://www.apache.org/
+
+Benchmarking localhost (be patient)
+Completed 1000 requests
+Completed 2000 requests
+Completed 3000 requests
+Completed 4000 requests
+Completed 5000 requests
+Completed 6000 requests
+Completed 7000 requests
+Completed 8000 requests
+Completed 9000 requests
+Completed 10000 requests
+Finished 10000 requests
+
+
+Server Software:
+Server Hostname:        localhost
+Server Port:            9096
+
+Document Path:          /api/top-entities
+Document Length:        50967 bytes
+
+Concurrency Level:      100
+Time taken for tests:   86.540 seconds
+Complete requests:      10000
+Failed requests:        0
+Total transferred:      510700000 bytes
+HTML transferred:       509670000 bytes
+Requests per second:    115.55 [#/sec] (mean)
+Time per request:       865.401 [ms] (mean)
+Time per request:       8.654 [ms] (mean, across all concurrent requests)
+Transfer rate:          5763.00 [Kbytes/sec] received
+
+Connection Times (ms)
+              min  mean[+/-sd] median   max
+Connect:        0    0   0.2      0       3
+Processing:     7  863 389.0    802    2995
+Waiting:        7  856 388.6    801    2913
+Total:          8  863 389.0    802    2995
+
+Percentage of the requests served within a certain time (ms)
+  50%    802
+  66%    997
+  75%   1098
+  80%   1195
+  90%   1398
+  95%   1597
+  98%   1800
+  99%   1996
+ 100%   2995 (longest request)
+```
 
 </details>
