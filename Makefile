@@ -11,7 +11,7 @@ spring-run: spring-setup
 	docker stop spring-bench-container || true
 	docker rm spring-bench-container || true
 	sleep 3
-	docker run -d --memory=256m --cpus=1 --network=host --name=spring-bench-container benchmarks-spring:latest
+	docker run -d --memory=512m --cpus=1 --network=host --name=spring-bench-container benchmarks-spring:latest
 
 spring-bench: spring-run
 	sleep 15
