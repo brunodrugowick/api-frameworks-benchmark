@@ -383,7 +383,7 @@ Comando: `ab -n 10000000 -c 100 localhost:<port>/api/`
 
 </details>
 
-## Resultados Docker (com limite de `cpus=1` e `memory=256m`)
+## Resultados Docker (com limite de `cpus=1` e `memory=512m`)
 
 <details>
 
