@@ -1,33 +1,31 @@
 package main
 
 import (
-	"encoding/json"
 	"fmt"
+	"github.com/gin-gonic/gin"
+	"gorm.io/driver/postgres"
+	"gorm.io/gorm"
 	"log"
 	"net/http"
 	"os"
-	"strconv"
-
-	"github.com/brunodrugowick/go-http-server-things/pkg/server"
-	"gorm.io/driver/postgres"
-	"gorm.io/gorm"
+	"time"
 )
 
 type TopEntity struct {
 	ID             uint           `gorm:"primaryKey" json:"id"`
-	MiddleEntities []MiddleEntity `gorm:"foreignKey:TopEntityID" json:"middleEntities"`
+	MiddleEntities []MiddleEntity `gorm:"many2many:top_entity_middle_entity;" json:"middleEntities"`
 }
 
 type MiddleEntity struct {
 	ID            uint          `gorm:"primaryKey" json:"id"`
-	TopEntityID   uint          `json:"-"`
-	InnerEntities []InnerEntity `gorm:"foreignKey:MiddleEntityID" json:"innerEntities"`
+	TopEntities   []TopEntity   `gorm:"many2many:top_entity_middle_entity;" json:"-"`
+	InnerEntities []InnerEntity `gorm:"many2many:middle_entity_inner_entity" json:"innerEntities"`
 }
 
 type InnerEntity struct {
-	ID             uint   `gorm:"primaryKey" json:"id"`
-	MiddleEntityID uint   `json:"-"`
-	Text           string `gorm:"type:varchar(100)" json:"text"`
+	ID             uint           `gorm:"primaryKey" json:"id"`
+	MiddleEntities []MiddleEntity `gorm:"many2many:middle_entity_inner_entity"`
+	Text           string         `gorm:"type:varchar(100)" json:"text"`
 }
 
 func main() {
@@ -39,6 +37,16 @@ func main() {
 	if err != nil {
 		log.Fatalf("failed to connect database: %v", err)
 	}
+
+	// Retrieve the underlying *sql.DB object
+	sqlDB, err := db.DB()
+	if err != nil {
+		log.Fatalf("failed to get *sql.DB: %v", err)
+	}
+	// Configure the connection pool
+	sqlDB.SetMaxIdleConns(10)           // Set the maximum number of idle connections
+	sqlDB.SetMaxOpenConns(100)          // Set the maximum number of open connections
+	sqlDB.SetConnMaxLifetime(time.Hour) // Set the maximum lifetime of a connection
 
 	// Clear DB
 	db.Delete(&InnerEntity{}, "1=1")
@@ -52,15 +60,18 @@ func main() {
 		db.Create(&topEntity)
 
 		for j := 0; j < 10; j++ {
-			middleEntity := MiddleEntity{TopEntityID: topEntity.ID}
+			middleEntity := MiddleEntity{TopEntities: []TopEntity{topEntity}}
+			middleEntity.TopEntities = append(middleEntity.TopEntities, topEntity)
 			db.Create(&middleEntity)
+			topEntity.MiddleEntities = append(topEntity.MiddleEntities, middleEntity)
 
 			for k := 0; k < 10; k++ {
 				innerEntity := InnerEntity{
-					MiddleEntityID: middleEntity.ID,
-					Text:           fmt.Sprintf("%d-%d-%d", i, j, k),
+					Text: fmt.Sprintf("%d-%d-%d", i, j, k),
 				}
+				innerEntity.MiddleEntities = append(innerEntity.MiddleEntities, middleEntity)
 				db.Create(&innerEntity)
+				middleEntity.InnerEntities = append(middleEntity.InnerEntities, innerEntity)
 			}
 		}
 	}
@@ -74,29 +85,26 @@ func main() {
 		portString = "9096"
 	}
 
-	port, err := strconv.Atoi(portString)
+	log.Printf("Starting server on port :%s", portString)
+
+	gin.SetMode(gin.ReleaseMode)
+	r := gin.Default()
+	r.GET("/api", func(c *gin.Context) {
+		c.Writer.Write([]byte("Hello, Golang"))
+		c.Writer.WriteHeader(http.StatusOK)
+		return
+	})
+	r.GET("/api/top-entities", func(c *gin.Context) {
+		var topEntities []TopEntity
+		if err := db.Preload("MiddleEntities.InnerEntities").Find(&topEntities).Error; err != nil {
+			c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+			return
+		}
+		c.JSON(http.StatusOK, topEntities)
+	})
+
+	err = r.Run(fmt.Sprintf(":%s", portString))
 	if err != nil {
-		log.Fatalf("Invalid port: %v", err)
+		fmt.Print(err)
 	}
-
-	log.Printf("Starting server on port %d", port)
-
-	apiPathHandler := server.NewDefaultPathHandlerBuilder("/api").
-		WithHandlerFunc("/", func(w http.ResponseWriter, r *http.Request) {
-			w.Write([]byte("Hello, Golang!"))
-		}).
-		WithHandlerFunc("/top-entities", func(w http.ResponseWriter, r *http.Request) {
-			var topEntities []TopEntity
-			db.Preload("MiddleEntities.InnerEntities").Find(&topEntities)
-			w.Header().Set("Content-Type", "application/json")
-			w.WriteHeader(http.StatusOK)
-			json.NewEncoder(w).Encode(topEntities)
-		}).
-		Build()
-
-	srv := server.NewDefaultServerBuilder().
-		SetPort(port).
-		WithPathHandler(apiPathHandler).Build()
-
-	log.Fatal(srv.ListenAndServe())
 }
