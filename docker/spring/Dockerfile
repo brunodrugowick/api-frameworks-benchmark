@@ -4,8 +4,8 @@ FROM maven:3.9-eclipse-temurin-17 AS build
 WORKDIR /app
 
 # Copy Maven configuration first (for better caching)
-COPY pom.xml ./
-COPY src ./src
+COPY ./spring-http-server/pom.xml ./
+COPY ./spring-http-server/src ./src
 
 # Build the application
 RUN mvn clean package -DskipTests

@@ -2,29 +2,13 @@
 
 Projetos para fazer benchmark de web servers
 
-> _NOTA_: O projeto está com uma estrutura maluca pois o HEROKU é uma porcaria! Em suma, tive que por o app Java na raíz e deixei o Go numa pasta.
-
 # TODO
 
 - [X] Adicionar algum framework web de Go pra ser justo com o Spring
 - [X] Adicionar algum ORM ao Go pra ser justo com o Spring (gorm)
+- [ ] Adicionar coisas de Python
 
 # Testes
-
-Faça deploy no Heroku:
-
-```shell
-heroku apps:create benchmark-spring-api
-heroku apps:create benchmark-golang-api
-heroku addons:create heroku-postgresql:hobby-dev -a benchmark-spring-api
-heroku addons:create heroku-postgresql:hobby-dev -a benchmark-golang-api
-heroku buildpacks:add -a benchmark-spring-api heroku-community/multi-procfile
-heroku buildpacks:add -a benchmark-golang-api heroku-community/multi-procfile
-heroku config:set -a benchmark-spring-api PROCFILE=Procfile
-heroku config:set -a benchmark-golang-api PROCFILE=go-http-server/Procfile
-git push https://git.heroku.com/benchmark-spring-api.git HEAD:master
-git push https://git.heroku.com/benchmark-golang-api.git HEAD:master
-```
 
 Você pode executar os testes com:
 
