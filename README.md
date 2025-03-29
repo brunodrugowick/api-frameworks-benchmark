@@ -10,6 +10,8 @@ Projetos para fazer benchmark de web servers
 
 # Testes
 
+> _NOTA_ Você pode simplesmente rodar `make all` para ver tudo acontecer.
+
 Você pode executar os testes com:
 
 ```shell
