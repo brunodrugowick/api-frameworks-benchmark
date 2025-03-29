@@ -1,3 +1,5 @@
+BENCH_REQUESTS ?= 1000
+
 local-db:
 	docker stop bench-spring-db || true
 	docker rm bench-spring-db || true
@@ -15,6 +17,6 @@ run: setup
 
 bench: run
 	sleep 15
-	ab -n 10000 -c 100 localhost:9095/api/top-entities
+	ab -n $(BENCH_REQUESTS) -c 100 localhost:9095/api/top-entities
 
 all: bench
