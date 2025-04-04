@@ -1,11 +1,19 @@
-BENCH_REQUESTS = 1000
+BENCH_REQUESTS = 10000
+CONTAINER_MEM = 512m
+CONTAINER_CPUS = 2
 
 .PHONY: spring golang all
 
 spring:
-	$(MAKE) -C spring-http-server all BENCH_REQUESTS=$(BENCH_REQUESTS)
+	$(MAKE) -C spring-http-server all \
+		BENCH_REQUESTS=$(BENCH_REQUESTS) \
+		CONTAINER_MEM=$(CONTAINER_MEM) \
+		CONTAINER_CPUS=$(CONTAINER_CPUS)
 
 golang:
-	$(MAKE) -C go-http-server all BENCH_REQUESTS=$(BENCH_REQUESTS)
+	$(MAKE) -C go-http-server all /
+		BENCH_REQUESTS=$(BENCH_REQUESTS)
+		CONTAINER_MEM=$(CONTAINER_MEM) \
+		CONTAINER_CPUS=$(CONTAINER_CPUS)
 
 all: spring golang
